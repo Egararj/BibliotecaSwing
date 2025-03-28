@@ -17,12 +17,12 @@ public class Libro implements Serializable{
 	public Libro() {
 	}
 
-	public Libro(String titulo, String autor, String editorial, String isbn) throws CamposVaciosException, IsbnException {
+	public Libro(String isbn,String titulo, String autor, String editorial) throws CamposVaciosException, IsbnException {
 		super();
+		this.setIsbn(isbn);
 		this.setTitulo(titulo);
 		this.setAutor(autor);
 		this.setEditorial(editorial);
-		this.setIsbn(isbn);
 	}
 	
 	
@@ -44,7 +44,7 @@ public class Libro implements Serializable{
 	}
 
 	public void setTitulo(String titulo) throws CamposVaciosException {
-		if(this.titulo == null) {
+		if(titulo.length() == 0) {
 			throw new CamposVaciosException();
 		}
 		this.titulo = titulo;
@@ -55,7 +55,7 @@ public class Libro implements Serializable{
 	}
 
 	public void setAutor(String autor) throws CamposVaciosException {
-		if(this.autor == null) {
+		if(autor.length() == 0) {
 			throw new CamposVaciosException();
 		}
 		this.autor = autor;
@@ -65,11 +65,11 @@ public class Libro implements Serializable{
 		return editorial;
 	}
 
-	public void setEditorial(String aditorial) throws CamposVaciosException {
-		if(this.editorial == null) {
+	public void setEditorial(String editorial) throws CamposVaciosException {
+		if(editorial.length() == 0) {
 			throw new CamposVaciosException();
 		}
-		this.editorial = aditorial;
+		this.editorial = editorial;
 	}
 
 	public String getIsbn() {
@@ -77,12 +77,12 @@ public class Libro implements Serializable{
 	}
 
 	public void setIsbn(String isbn) throws CamposVaciosException, IsbnException {
-		if(this.isbn == null) {
+		if(isbn.length() == 0) {
 			throw new CamposVaciosException();
 		}
 		boolean correcto = true;
 		
-		correcto = (CompruebaISBN.compruebaISBN(this.isbn));
+		correcto = (CompruebaISBN.compruebaISBN(isbn));
 		if(correcto) this.isbn = isbn;
 		else {
 			throw new IsbnException();

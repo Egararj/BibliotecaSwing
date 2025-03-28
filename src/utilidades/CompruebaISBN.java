@@ -6,8 +6,9 @@ public class CompruebaISBN {
 
 	public static boolean compruebaISBN(String isbn) {
 		boolean correcto = true;
+		
 		if(isbn.length() == 0) correcto = false;
-		if(isbn.length() != 9) correcto = false;
+		if(isbn.length() != 13) correcto = false;
         int isbnNum = 0, resto=0;
 
 		 for (int x=0, cont=3; x<isbn.length()-1; x++){
