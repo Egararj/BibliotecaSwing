@@ -1,34 +1,43 @@
 package vista.swing;
 
 import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import modelo.Libro;
+import servicio.LibroServicio;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FrmBiblioteca extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel panel, panelLibros, panelMantenimientoLibro,panelNavegador;
-	private JButton btnNuevo;
 	private ImageIcon nuevo, editar, borrar, guardar, deshacer, primero, izquierda, derecha, ultimo;
-	private JButton btnEditar, btnBorrar, btnGuardar, btnDeshacer;
+	private JButton btnNuevo, btnEditar, btnBorrar, btnGuardar, btnDeshacer;
 	private JLabel lblIdLibro, lblTitulo, lblAutor, lblEditorial, lblIsbn, lblFecha, lblFecha2;
 	private JTextField textIdLibro, textTitulo, textAutor, textEditorial, textIsbn, textFecha;
 	private JCheckBox chcPrestado;
-	private JButton btnPrimero;
-	private JButton btnIzquierda;
-	private JButton btnDerecha;
-	private JButton btnFinal;
+	private JButton btnPrimero, btnIzquierda, btnDerecha, btnFinal;
+	private boolean b;
+	private int puntero, tamaño;
+	List<Libro>libros= new ArrayList<Libro>();
 
 	public FrmBiblioteca() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 607, 621);
+		puntero = 0;
+		b = true;
 		panel = new JPanel();
 		panel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(panel);
@@ -38,12 +47,136 @@ public class FrmBiblioteca extends JFrame {
 		
 		definirVentana();
 		definirEventos();
+		
+		LibroServicio libroServicio= new LibroServicio();
+		
+		try {
+			libros = libroServicio.obtenerTodos();
+			libroServicio=null;
+		}catch (Exception e) {
+			System.out.println("Error en libro servicio frm");
+		}
+		
+		habilitarPanelDeLibros(b);
+		habilitarPanelDeMantenimiento(b);
+		habilitarPanelNavegador(b);
+		limpiarCajasDeTexto();
+		mostrarLibro(puntero);
 		this.setVisible(true);
+	}
+
+
+
+	private void mostrarLibro(int puntero) {
+
+		Libro libro = libros.get(puntero);
+		textAutor.setText(libro.getAutor());
+		textTitulo.setText(libro.getTitulo());
+		textEditorial.setText(libro.getEditorial());
+		if(libro.getFechaDevolucion() != null)
+		textFecha.setText(libro.getFechaDevolucion().toString());
+		textIsbn.setText(libro.getIsbn());
+		if(libro.isPrestado())
+		chcPrestado.setSelected(true);
+		else
+		chcPrestado.setSelected(false);
+		
+	}
+
+
+
+	private void limpiarCajasDeTexto() {
+
+		textIdLibro.setText("");
+		textTitulo.setText("");
+		textAutor.setText("");
+		textEditorial.setText("");
+		textIsbn.setText("");
+		textFecha.setText("");
+		chcPrestado.setSelected(false);
+		
+	}
+
+
+	private void habilitarPanelNavegador(boolean b) {
+		
+		btnPrimero.setEnabled(b);
+		btnIzquierda.setEnabled(b);
+		btnDerecha.setEnabled(b);
+		btnFinal.setEnabled(b);
+		
+	}
+
+
+	private void habilitarPanelDeMantenimiento(boolean b) {
+		
+		btnNuevo.setEnabled(b);
+		btnEditar.setEnabled(b);
+		btnBorrar.setEnabled(b);
+		btnGuardar.setEnabled(!b);
+		btnDeshacer.setEnabled(!b);
+		
+	}
+
+
+	private void habilitarPanelDeLibros(boolean b) {
+
+		textIdLibro.setEditable(b);
+		textTitulo.setEditable(b);
+		textAutor.setEditable(b);
+		textEditorial.setEditable(b);
+		textIsbn.setEditable(b);
+		textFecha.setEditable(b);
+		chcPrestado.setEnabled(b);
+		
 	}
 
 
 	private void definirEventos() {
 		
+		btnPrimero.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				limpiarCajasDeTexto();
+				puntero = 0;
+				mostrarLibro(puntero);
+			}
+		});
+		
+		btnIzquierda.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if(puntero-- >= 0) {
+					limpiarCajasDeTexto();
+					puntero--;
+					mostrarLibro(puntero);
+				}
+				
+			}
+		});
+		
+		btnDerecha.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				tamaño = libros.size();
+				if(puntero++ <= tamaño-1) {
+					limpiarCajasDeTexto();
+					puntero++;
+					mostrarLibro(puntero);
+				}
+				
+			}
+		});
+		
+		btnFinal.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				limpiarCajasDeTexto();
+				tamaño = libros.size();
+				puntero = tamaño-1;
+				mostrarLibro(puntero);
+				
+			}
+		});
 	}
 
 
@@ -72,11 +205,13 @@ public class FrmBiblioteca extends JFrame {
 		guardar = new ImageIcon("imagenes/botonGuardar.jpg");
 		btnGuardar = new JButton(guardar);
 		btnGuardar.setBounds(304, 11, 88, 83);
+		btnGuardar.setEnabled(false);
 		panelMantenimientoLibro.add(btnGuardar);
 		
 		deshacer = new ImageIcon("imagenes/botonDeshacer.jpg");
 		btnDeshacer = new JButton(deshacer);
 		btnDeshacer.setBounds(402, 11, 88, 83);
+		btnDeshacer.setEnabled(false);
 		panelMantenimientoLibro.add(btnDeshacer);
 		
 		panelLibros = new JPanel();
