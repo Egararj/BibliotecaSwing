@@ -137,7 +137,6 @@ public class FrmBiblioteca extends JFrame {
 		btnPrimero.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				limpiarCajasDeTexto();
 				puntero = 0;
 				mostrarLibro(puntero);
 			}
@@ -146,8 +145,7 @@ public class FrmBiblioteca extends JFrame {
 		btnIzquierda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				if(puntero-- >= 0) {
-					limpiarCajasDeTexto();
+				if(puntero - 1 >= 0) {
 					puntero--;
 					mostrarLibro(puntero);
 				}
@@ -159,8 +157,7 @@ public class FrmBiblioteca extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				tamaño = libros.size();
-				if(puntero++ <= tamaño-1) {
-					limpiarCajasDeTexto();
+				if(puntero + 1 < tamaño) {
 					puntero++;
 					mostrarLibro(puntero);
 				}
@@ -170,7 +167,7 @@ public class FrmBiblioteca extends JFrame {
 		
 		btnFinal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				limpiarCajasDeTexto();
+				
 				tamaño = libros.size();
 				puntero = tamaño-1;
 				mostrarLibro(puntero);
