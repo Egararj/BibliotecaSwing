@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import excepciones.CamposVaciosException;
+import excepciones.IsbnException;
 import modelo.Libro;
 import servicio.LibroServicio;
 
@@ -17,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 
 public class FrmBiblioteca extends JFrame {
@@ -29,7 +32,7 @@ public class FrmBiblioteca extends JFrame {
 	private JTextField textIdLibro, textTitulo, textAutor, textEditorial, textIsbn, textFecha;
 	private JCheckBox chcPrestado;
 	private JButton btnPrimero, btnIzquierda, btnDerecha, btnFinal;
-	private boolean b;
+	private boolean b, libroNuevo;
 	private int puntero, tamaño;
 	List<Libro>libros= new ArrayList<Libro>();
 
@@ -57,7 +60,7 @@ public class FrmBiblioteca extends JFrame {
 			System.out.println("Error en libro servicio frm");
 		}
 		
-		habilitarPanelDeLibros(b);
+		habilitarPanelDeLibros(!b);
 		habilitarPanelDeMantenimiento(b);
 		habilitarPanelNavegador(b);
 		limpiarCajasDeTexto();
@@ -170,6 +173,75 @@ public class FrmBiblioteca extends JFrame {
 				
 				tamaño = libros.size();
 				puntero = tamaño-1;
+				mostrarLibro(puntero);
+				
+			}
+		});
+		
+		btnNuevo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				libroNuevo = true;
+				limpiarCajasDeTexto();
+				habilitarPanelNavegador(false);
+				habilitarPanelDeMantenimiento(false);
+				habilitarPanelDeLibros(true);
+				
+			}
+		});
+		
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				libroNuevo = false;
+				habilitarPanelNavegador(false);
+				habilitarPanelDeMantenimiento(false);
+				habilitarPanelDeLibros(true);
+
+			}
+		});
+		
+		btnGuardar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if(libroNuevo) {
+					LibroServicio libroServicio = new LibroServicio();
+					try {
+						libroServicio.agregarLibro(textIsbn.getText(), textTitulo.getText(), textAutor.getText(), textEditorial.getText());
+					} catch (CamposVaciosException | IsbnException | IOException e1) {
+						System.out.println(e1.getMessage());
+					}
+					habilitarPanelNavegador(true);
+					habilitarPanelDeMantenimiento(true);
+					
+					try {
+						libros = libroServicio.obtenerTodos();
+						libroServicio=null;
+					}catch (Exception e1) {
+						System.out.println("Error en libro servicio frm");
+						habilitarPanelNavegador(true);
+						habilitarPanelDeMantenimiento(true);
+						habilitarPanelDeLibros(false);
+						puntero = 0;
+						mostrarLibro(puntero);
+					}
+					puntero = 0;
+					mostrarLibro(puntero);
+
+				}else{
+					
+				}
+				
+			}
+		});
+		
+		btnDeshacer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				habilitarPanelNavegador(true);
+				habilitarPanelDeMantenimiento(true);
+				habilitarPanelDeLibros(false);
+				puntero = 0;
 				mostrarLibro(puntero);
 				
 			}
