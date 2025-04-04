@@ -48,13 +48,8 @@ public class LibroRepositorio {
 	}
 	
 	public Libro editarLibro(Libro libro, String fechaDevolucion, boolean prestado) {
-		/*if(libro.getFechaDevolucion() != null) {
-		String fechaDevolucionLibro = libro.getFechaDevolucion().toString();
-		}else {
-			String fechaDevolucionLibro = "";
-		}*/
-		boolean prestadoLibro = libro.isPrestado();
 		
+		boolean prestadoLibro = libro.isPrestado();		
 		if(prestadoLibro == false && prestado == true) {
 			LocalDate diezDias = LocalDate.now().plusDays(10);
 			libro.setFechaDevolucion(diezDias);

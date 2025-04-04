@@ -16,6 +16,7 @@ import servicio.LibroServicio;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
@@ -208,6 +209,18 @@ public class FrmBiblioteca extends JFrame {
 		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				int opcion = JOptionPane.showConfirmDialog(null, "¿Deseas borrar el libro?", "Confirmación", JOptionPane.YES_NO_OPTION);			
+				if(opcion == JOptionPane.YES_OPTION) {
+					LibroServicio libroServicio = new LibroServicio();
+					try {
+						libroServicio.borrarLibro(puntero);
+						libros = libroServicio.obtenerTodos();
+					} catch (IOException e1) {
+						System.out.println(e1.getMessage());					
+					}
+					puntero = 0;
+					mostrarLibro(puntero);
+				}
 			}
 		});
 		

@@ -47,4 +47,14 @@ public class LibroServicio implements ILibro {
 		return null;
 	}
 
+	@Override
+	public Libro borrarLibro(int puntero) throws FileNotFoundException, IOException {
+		
+		LibroRepositorio libroRepositorio = new LibroRepositorio();
+		List<Libro> libros = libroRepositorio.cargarLibros();
+		libros.remove(puntero);
+		libroRepositorio.guardarLibros();
+		return null;
+	}
+
 }

@@ -16,4 +16,6 @@ public interface ILibro {
 	
 	Libro editarLibro(String isbn, String fechaPrestamo, boolean prestado) throws FileNotFoundException, IOException;
 	
+	Libro borrarLibro(int puntero) throws FileNotFoundException, IOException;
+	
 }
