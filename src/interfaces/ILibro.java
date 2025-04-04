@@ -14,5 +14,6 @@ public interface ILibro {
 	
 	List<Libro> obtenerTodos();
 	
+	Libro editarLibro(String isbn);
 	
 }

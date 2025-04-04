@@ -186,6 +186,8 @@ public class FrmBiblioteca extends JFrame {
 				habilitarPanelNavegador(false);
 				habilitarPanelDeMantenimiento(false);
 				habilitarPanelDeLibros(true);
+				textFecha.setEnabled(false);
+				chcPrestado.setEnabled(false);
 				
 			}
 		});
@@ -211,22 +213,22 @@ public class FrmBiblioteca extends JFrame {
 					} catch (CamposVaciosException | IsbnException | IOException e1) {
 						System.out.println(e1.getMessage());
 					}
-					habilitarPanelNavegador(true);
-					habilitarPanelDeMantenimiento(true);
 					
 					try {
 						libros = libroServicio.obtenerTodos();
 						libroServicio=null;
 					}catch (Exception e1) {
 						System.out.println("Error en libro servicio frm");
-						habilitarPanelNavegador(true);
-						habilitarPanelDeMantenimiento(true);
-						habilitarPanelDeLibros(false);
-						puntero = 0;
-						mostrarLibro(puntero);
+						
 					}
+					
+					habilitarPanelNavegador(true);
+					habilitarPanelDeMantenimiento(true);
+					habilitarPanelDeLibros(false);
 					puntero = 0;
 					mostrarLibro(puntero);
+					textFecha.setEnabled(true);
+					chcPrestado.setEnabled(true);
 
 				}else{
 					
@@ -243,6 +245,8 @@ public class FrmBiblioteca extends JFrame {
 				habilitarPanelDeLibros(false);
 				puntero = 0;
 				mostrarLibro(puntero);
+				textFecha.setEnabled(false);
+				chcPrestado.setEnabled(false);
 				
 			}
 		});
@@ -348,6 +352,7 @@ public class FrmBiblioteca extends JFrame {
 		
 		chcPrestado = new JCheckBox("Prestado");
 		chcPrestado.setBounds(1, 187, 97, 23);
+		chcPrestado.setEnabled(false);
 		panelLibros.add(chcPrestado);
 		
 		panelNavegador = new JPanel();

@@ -34,4 +34,12 @@ public class LibroServicio implements ILibro {
 		return libros;
 	}
 
+	@Override
+	public Libro editarLibro(String isbn) {
+		
+		LibroRepositorio libroRepositorio = new LibroRepositorio();
+		
+		return null;
+	}
+
 }
