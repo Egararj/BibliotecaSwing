@@ -35,9 +35,14 @@ public class LibroServicio implements ILibro {
 	}
 
 	@Override
-	public Libro editarLibro(String isbn) {
+	public Libro editarLibro(String isbn, String fechaDevolucion, boolean prestado) throws FileNotFoundException, IOException {
 		
 		LibroRepositorio libroRepositorio = new LibroRepositorio();
+		List<Libro> libros = libroRepositorio.cargarLibros();
+		Libro libro = libroRepositorio.buscarLibro(libros, isbn);
+		libro = libroRepositorio.editarLibro(libro, fechaDevolucion, prestado);
+		libroRepositorio.guardarLibroEditado(libros, libro);
+		libroRepositorio.guardarLibros();
 		
 		return null;
 	}

@@ -14,6 +14,6 @@ public interface ILibro {
 	
 	List<Libro> obtenerTodos();
 	
-	Libro editarLibro(String isbn);
+	Libro editarLibro(String isbn, String fechaPrestamo, boolean prestado) throws FileNotFoundException, IOException;
 	
 }

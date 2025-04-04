@@ -78,9 +78,11 @@ public class FrmBiblioteca extends JFrame {
 		textEditorial.setText(libro.getEditorial());
 		if(libro.getFechaDevolucion() != null)
 		textFecha.setText(libro.getFechaDevolucion().toString());
+		else
+		textFecha.setText("");
 		textIsbn.setText(libro.getIsbn());
 		if(libro.isPrestado())
-		chcPrestado.setSelected(true);
+		chcPrestado.setSelected(true); 
 		else
 		chcPrestado.setSelected(false);
 		
@@ -203,6 +205,12 @@ public class FrmBiblioteca extends JFrame {
 			}
 		});
 		
+		btnBorrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -227,10 +235,32 @@ public class FrmBiblioteca extends JFrame {
 					habilitarPanelDeLibros(false);
 					puntero = 0;
 					mostrarLibro(puntero);
-					textFecha.setEnabled(true);
-					chcPrestado.setEnabled(true);
+					textFecha.setEnabled(false);
+					chcPrestado.setEnabled(false);
 
 				}else{
+					LibroServicio libroServicio = new LibroServicio();
+					try {
+						libroServicio.editarLibro(textIsbn.getText(), textFecha.getText(), chcPrestado.isSelected());
+					} catch (IOException e1) {
+						System.out.println("Error en libro servicio al editar");
+					}
+					
+					try {
+						libros = libroServicio.obtenerTodos();
+						libroServicio=null;
+					}catch (Exception e1) {
+						System.out.println("Error en libro servicio frm");
+						
+					}
+					
+					habilitarPanelNavegador(true);
+					habilitarPanelDeMantenimiento(true);
+					habilitarPanelDeLibros(false);
+					puntero = 0;
+					mostrarLibro(puntero);
+					textFecha.setEnabled(false);
+					chcPrestado.setEnabled(false);
 					
 				}
 				
