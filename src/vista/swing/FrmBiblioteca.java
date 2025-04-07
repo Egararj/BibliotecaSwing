@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import excepciones.CamposVaciosException;
 import excepciones.IsbnException;
@@ -21,25 +22,37 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.awt.event.ActionEvent;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import javax.swing.JScrollBar;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.BoxLayout;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
 
 public class FrmBiblioteca extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel panel, panelLibros, panelMantenimientoLibro,panelNavegador;
+	private JPanel panel, panelLibros, panelMantenimientoLibro, panelNavegador;
 	private ImageIcon nuevo, editar, borrar, guardar, deshacer, primero, izquierda, derecha, ultimo;
-	private JButton btnNuevo, btnEditar, btnBorrar, btnGuardar, btnDeshacer;
+	private JButton btnNuevo, btnEditar, btnBorrar, btnGuardar, btnDeshacer, btnFiltrar;
 	private JLabel lblIdLibro, lblTitulo, lblAutor, lblEditorial, lblIsbn, lblFecha, lblFecha2;
-	private JTextField textIdLibro, textTitulo, textAutor, textEditorial, textIsbn, textFecha;
+	private JTextField textIdLibro, textTitulo, textAutor, textEditorial, textIsbn, textFecha, textConsulta;
 	private JCheckBox chcPrestado;
 	private JButton btnPrimero, btnIzquierda, btnDerecha, btnFinal;
+	private JComboBox cmbConsulta;
 	private boolean b, libroNuevo;
 	private int puntero, tamaño;
+	DefaultTableModel dtm;
 	List<Libro>libros= new ArrayList<Libro>();
+	private JTable tableLibros;
 
 	public FrmBiblioteca() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 607, 621);
+		setBounds(100, 100, 1215, 621);
 		puntero = 0;
 		b = true;
 		panel = new JPanel();
@@ -66,7 +79,28 @@ public class FrmBiblioteca extends JFrame {
 		habilitarPanelNavegador(b);
 		limpiarCajasDeTexto();
 		mostrarLibro(puntero);
+		cargarGrid(libros);
 		this.setVisible(true);
+	}
+
+
+
+	private void cargarGrid(List<Libro> libros) {
+		
+		String[] titulos = {"isbn", "titulo", "autor", "editorial", "fechaDevolucion"};
+		dtm.setRowCount(0);
+		dtm.setColumnCount(0);
+		dtm.setColumnIdentifiers(titulos);
+		
+		for(Libro l: libros) {
+			String fecha = "";
+			if(l.getFechaDevolucion() != null) {
+				fecha = l.getFechaDevolucion().toString();
+			}
+			Object[] fila = {l.getIsbn(), l.getTitulo(), l.getAutor(), l.getEditorial(), fecha};
+			dtm.addRow(fila);
+		}
+		
 	}
 
 
@@ -220,6 +254,7 @@ public class FrmBiblioteca extends JFrame {
 					}
 					puntero = 0;
 					mostrarLibro(puntero);
+					cargarGrid(libros);
 				}
 			}
 		});
@@ -248,6 +283,7 @@ public class FrmBiblioteca extends JFrame {
 					habilitarPanelDeLibros(false);
 					puntero = 0;
 					mostrarLibro(puntero);
+					cargarGrid(libros);
 					textFecha.setEnabled(false);
 					chcPrestado.setEnabled(false);
 
@@ -272,6 +308,7 @@ public class FrmBiblioteca extends JFrame {
 					habilitarPanelDeLibros(false);
 					puntero = 0;
 					mostrarLibro(puntero);
+					cargarGrid(libros);
 					textFecha.setEnabled(false);
 					chcPrestado.setEnabled(false);
 					
@@ -290,6 +327,52 @@ public class FrmBiblioteca extends JFrame {
 				mostrarLibro(puntero);
 				textFecha.setEnabled(false);
 				chcPrestado.setEnabled(false);
+				
+			}
+		});
+		
+		btnFiltrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			 int opcionConsulta = cmbConsulta.getSelectedIndex();
+			 LibroServicio libroServicio = new LibroServicio();
+			 List<Libro> librosFiltrado = null;
+			 switch (opcionConsulta) {
+			 
+			 case 0:
+				 
+				 libroServicio = new LibroServicio();
+				 libros = libroServicio.obtenerTodos();
+				 cargarGrid(libros);
+
+				 break;
+				 
+			 case 1:
+				 
+				 libroServicio = new LibroServicio();
+				 libros = libroServicio.obtenerTodos();
+				 String filtroAutor = textConsulta.getText().toLowerCase();
+				 if(filtroAutor == null) {break;}
+				 librosFiltrado = libros.stream()
+					.filter(libro -> libro.getAutor().toLowerCase().startsWith(filtroAutor))
+					.toList();
+				 cargarGrid(librosFiltrado);
+				 
+				 break;
+				 
+			 case 2:
+				 
+				 libroServicio = new LibroServicio();
+				 libros = libroServicio.obtenerTodos();
+				 LocalDate filtroFecha = LocalDate.now();
+				 librosFiltrado = libros.stream()
+						 .filter(libro -> libro.getFechaDevolucion() != null)
+						 .filter(libro -> libro.getFechaDevolucion().isBefore(filtroFecha))
+						 .toList(); 
+				 cargarGrid(librosFiltrado);
+				 
+				 break;
+			 }
 				
 			}
 		});
@@ -422,6 +505,33 @@ public class FrmBiblioteca extends JFrame {
 		btnFinal = new JButton(ultimo);
 		btnFinal.setBounds(184, 11, 48, 46);
 		panelNavegador.add(btnFinal);
+		
+		cmbConsulta = new JComboBox();
+		cmbConsulta.setModel(new DefaultComboBoxModel(new String[] {"todos", "autor", "no devueltos"}));
+		cmbConsulta.setBounds(597, 54, 134, 22);
+		panel.add(cmbConsulta);
+		
+		textConsulta = new JTextField();
+		textConsulta.setBounds(762, 55, 177, 20);
+		panel.add(textConsulta);
+		textConsulta.setColumns(10);
+		
+		btnFiltrar = new JButton("Filtrar");
+		btnFiltrar.setBounds(964, 54, 89, 23);
+		panel.add(btnFiltrar);
+		
+		JPanel panelGrid = new JPanel();
+		panelGrid.setBounds(597, 87, 592, 400);
+		panel.add(panelGrid);
+		panelGrid.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		panelGrid.add(scrollPane, BorderLayout.CENTER);
+		
+		dtm = new DefaultTableModel();
+		tableLibros = new JTable(dtm);
+		tableLibros.setEnabled(false);
+		scrollPane.setViewportView(tableLibros);
 		
 		
 	}
